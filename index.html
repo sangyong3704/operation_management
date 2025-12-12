@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>MGT3003 운영관리 마스터</title>
+    
+    <!-- Tailwind CSS (스타일링) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts (Noto Sans KR) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons (아이콘) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f1f5f9; /* Slate-100 */
+            overscroll-behavior-y: none; /* 모바일에서 당겨서 새로고침 방지 */
+            -webkit-tap-highlight-color: transparent; /* 터치 하이라이트 제거 */
+        }
+
+        /* 3D 카드 뒤집기 효과 */
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+
+        /* 애니메이션 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+
+        @keyframes bounceSlight {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .animate-bounce-slight { animation: bounceSlight 2s infinite; }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+
+        /* 안전 영역 패딩 (아이폰 노치 및 갤럭시 카메라 홀 대응) */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        .pt-safe { padding-top: env(safe-area-inset-top); }
+        
+        /* 스크롤바 숨기기 */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<!-- h-[100dvh]를 사용하여 모바일 주소창 높이 변화에 대응 -->
+<body class="text-slate-800 h-[100dvh] flex flex-col overflow-hidden w-full max-w-lg mx-auto bg-slate-50 border-x border-slate-200 shadow-2xl relative">
+
+    <!-- 헤더 -->
+    <header class="bg-white/90 backdrop-blur-md px-5 py-4 shadow-sm z-20 flex items-center justify-between sticky top-0 pt-safe">
+        <div class="flex items-center gap-3 w-full">
+            <button id="back-btn" class="hidden p-2 -ml-2 hover:bg-slate-100 rounded-full transition-colors" onclick="navigate('home')">
+                <i data-lucide="arrow-left" class="w-6 h-6 text-slate-600"></i>
+            </button>
+            <div id="home-icon" class="p-1.5 bg-blue-100 rounded-xl">
+                <i data-lucide="book-open" class="w-5 h-5 text-blue-600"></i>
+            </div>
+            <h1 id="page-title" class="text-xl font-bold text-slate-800 tracking-tight truncate flex-1">MGT3003 마스터</h1>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main id="app-content" class="flex-1 overflow-y-auto overflow-x-hidden relative bg-slate-50 no-scrollbar p-5">
+        <!-- 자바스크립트로 내용이 여기에 주입됩니다 -->
+    </main>
+
+    <!-- 하단 네비게이션 -->
+    <nav class="bg-white border-t border-slate-100 flex justify-around p-2 pb-safe z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] bg-opacity-95 backdrop-blur">
+        <button onclick="navigate('home')" class="nav-btn flex flex-col items-center gap-1.5 p-2 rounded-2xl w-1/5 transition-all duration-200 active:scale-95" id="nav-home">
+            <i data-lucide="home" class="w-6 h-6"></i>
+            <span class="text-[11px] font-bold">홈</span>
+        </button>
+        <button onclick="navigate('flashcard')" class="nav-btn flex flex-col items-center gap-1.5 p-2 rounded-2xl w-1/5 transition-all duration-200 active:scale-95" id="nav-flashcard">
+            <i data-lucide="brain" class="w-6 h-6"></i>
+            <span class="text-[11px] font-bold">암기</span>
+        </button>
+        <button onclick="navigate('quiz')" class="nav-btn flex flex-col items-center gap-1.5 p-2 rounded-2xl w-1/5 transition-all duration-200 active:scale-95" id="nav-quiz">
+            <i data-lucide="check-circle" class="w-6 h-6"></i>
+            <span class="text-[11px] font-bold">퀴즈</span>
+        </button>
+        <button onclick="navigate('matching')" class="nav-btn flex flex-col items-center gap-1.5 p-2 rounded-2xl w-1/5 transition-all duration-200 active:scale-95" id="nav-matching">
+            <i data-lucide="link" class="w-6 h-6"></i>
+            <span class="text-[11px] font-bold">연결</span>
+        </button>
+        <button onclick="navigate('summary')" class="nav-btn flex flex-col items-center gap-1.5 p-2 rounded-2xl w-1/5 transition-all duration-200 active:scale-95" id="nav-summary">
+            <i data-lucide="list" class="w-6 h-6"></i>
+            <span class="text-[11px] font-bold">요약</span>
+        </button>
+    </nav>
+
+    <script>
+        // ----------------------------------------------------------------------
+        // DATA SETS (이전 대화의 데이터를 그대로 사용)
+        // ----------------------------------------------------------------------
+        const FLASHCARD_DATA = [
+            { id: 101, term: "지연 차별화 (Delayed Differentiation)", definition: "고객의 선호가 확정될 때까지 제품 생산의 최종 단계를 미루는 기법. (예: 옷의 염색을 마지막에 함)", category: "5장: 제품설계" },
+            { id: 102, term: "모듈러 설계 (Modular Design)", definition: "부품을 표준화된 모듈 단위로 그룹화하여 교체나 조합이 쉽도록 하는 설계. (장점: 진단/수리 용이, 재고 단순화)", category: "5장: 제품설계" },
+            { id: 103, term: "동시 공학 (Concurrent Engineering)", definition: "설계 초기부터 제조, 마케팅, 구매 부서가 함께 참여하여 개발 시간을 단축하고 생산 문제를 예방하는 접근법.", category: "5장: 제품설계" },
+            { id: 104, term: "QFD (품질기능전개)", definition: "고객의 소리(VOC)를 제품 개발의 기술적 사양으로 변환하는 구조화된 접근법. '품질의 집' 활용.", category: "5장: 제품설계" },
+            { id: 105, term: "카노 모델 (Kano Model)", definition: "품질 요소를 '불만족(필수)', '만족(성능)', '매력적(감동)' 요인으로 구분하여 개발 우선순위를 결정하는 모델.", category: "5장: 제품설계" },
+            { id: 106, term: "서비스 청사진 (Service Blueprinting)", definition: "서비스 프로세스를 시각화하여 고객의 행동, 전방/후방 직원의 행동, 지원 프로세스를 분석하는 도구.", category: "5장: 제품설계" },
+            { id: 107, term: "제조용이성 (Manufacturability)", definition: "설계된 제품을 조직이 쉽고 경제적으로 생산할 수 있는 능력. DFM이라고도 함.", category: "5장: 제품설계" },
+            { id: 108, term: "3R (지속가능성)", definition: "Reduce(감소), Reuse(재사용), Recycle(재활용). 친환경 제조를 위한 설계(DfE)의 핵심 원칙.", category: "5장: 제품설계" },
+            { id: 109, term: "역공학 (Reverse Engineering)", definition: "경쟁사의 제품을 분해하여 설계, 재료, 제조 방식 등을 분석하고 벤치마킹하는 기법.", category: "5장: 제품설계" },
+            { id: 201, term: "Job Shop (개별 작업 공정)", definition: "다품종 소량 생산. 범용 장비 사용, 높은 유연성, 높은 단위당 비용, 복잡한 스케줄링. (예: 응급실)", category: "6장: 프로세스" },
+            { id: 202, term: "Batch Process (배치 공정)", definition: "중품종 중량 생산. 품목별 묶음 생산. Job Shop과 Assembly의 중간. (예: 베이커리)", category: "6장: 프로세스" },
+            { id: 203, term: "Assembly Line (조립/반복 공정)", definition: "소품종 대량 생산. 전용 장비, 높은 효율성, 낮은 유연성. (예: 자동차 조립)", category: "6장: 프로세스" },
+            { id: 204, term: "Continuous Process (연속 공정)", definition: "초소품종 초대량 생산. 24시간 가동, 가동 중단 비용 막대함, 유연성 거의 없음. (예: 정유)", category: "6장: 프로세스" },
+            { id: 205, term: "리틀의 법칙 (Little's Law)", definition: "재공품(I) = 산출률(R) × 흐름시간(T). 프로세스 내 평균 재고량과 처리 속도의 관계.", category: "6장: 프로세스" },
+            { id: 206, term: "라인 밸런싱 (Line Balancing)", definition: "각 작업장의 소요 시간을 균등하게 배분하여 병목을 없애고 유휴 시간을 최소화하는 기법.", category: "6장: 프로세스" },
+            { id: 301, term: "EOQ (경제적 주문량)", definition: "연간 재고 유지 비용과 주문 비용의 합이 최소가 되는 1회 주문량.", category: "7장: 재고관리" },
+            { id: 302, term: "안전 재고 (Safety Stock)", definition: "수요 변동이나 리드타임 지연 등 불확실성에 대비해 품절을 막기 위해 보유하는 완충 재고.", category: "7장: 재고관리" },
+            { id: 303, term: "ABC 분석", definition: "파레토 원칙(80/20)에 따라 재고 품목을 중요도 기준으로 A, B, C 등급으로 나누어 관리.", category: "7장: 재고관리" },
+            { id: 304, term: "독립 수요 (Independent Demand)", definition: "완제품과 같이 시장 상황에 따라 결정되는 수요. 예측 필요.", category: "7장: 재고관리" },
+            { id: 305, term: "Q-시스템 (고정 주문량)", definition: "재고가 재주문점(R)에 도달하면 고정된 양(Q)을 주문. 지속적 검토 필요.", category: "7장: 재고관리" },
+            { id: 306, term: "P-시스템 (고정 기간)", definition: "정해진 주기(P)마다 재고를 확인하고 목표 수준까지 주문. 관리가 간편.", category: "7장: 재고관리" },
+            { id: 401, term: "채찍 효과 (Bullwhip Effect)", definition: "최종 소비자 수요의 작은 변동이 공급망 상류로 갈수록 증폭되는 현상.", category: "8장: SCM" },
+            { id: 402, term: "VMI (공급자 주도형 재고관리)", definition: "공급업체(Vendor)가 구매자의 재고를 직접 관리하고 보충하는 방식.", category: "8장: SCM" },
+            { id: 403, term: "크로스 도킹 (Cross-Docking)", definition: "입고된 상품을 창고 보관 없이 즉시 분류하여 배송하는 물류 시스템.", category: "8장: SCM" }
+        ];
+
+        const QUIZ_DATA = [
+            { id: 1, question: "카노 모델에서 '충족되지 않으면 불만이지만, 충족되어도 만족도가 크게 오르지 않는' 기본 요건은?", options: ["매력적 요인", "성과 요인", "불만족(필수) 요인", "차별화 요인"], answer: 2, explanation: "Must-be(불만족 요인)는 당연히 기대되는 기본 요건입니다." },
+            { id: 2, question: "모듈러 설계(Modular Design)의 장점으로 가장 적절한 것은?", options: ["설계의 복잡성 증가", "수리 및 진단의 용이성", "재고 품목 수의 급증", "고객 맞춤화 불가능"], answer: 1, explanation: "모듈 단위로 교체하여 수리가 쉽고 재고 관리가 단순해집니다." },
+            { id: 3, question: "지연 차별화(Delayed Differentiation)의 예시는?", options: ["완제품 재고 비축", "흰 티셔츠 생산 후 주문 시 염색", "원자재 대량 구매", "전 공정 자동화"], answer: 1, explanation: "생산의 최종 단계를 고객 주문 시점까지 미루는 전략입니다." },
+            { id: 4, question: "다품종 소량 생산에 적합하고 유연성이 가장 높은 공정은?", options: ["Job Shop", "Batch", "Assembly", "Continuous"], answer: 0, explanation: "Job Shop은 범용 장비를 사용하여 유연성이 높습니다." },
+            { id: 5, question: "리틀의 법칙 공식으로 옳은 것은?", options: ["I = R / T", "I = R × T", "T = I × R", "R = I × T"], answer: 1, explanation: "재공품(I) = 산출률(R) × 흐름시간(T)" },
+            { id: 6, question: "라인 밸런싱의 주된 목적은?", options: ["재고 비용 최소화", "다양한 제품 생산", "병목 제거 및 유휴 시간 최소화", "공급업체 선정"], answer: 2, explanation: "각 공정 시간을 균등하게 하여 흐름을 원활하게 합니다." },
+            { id: 7, question: "24시간 가동되며 가동 중단 비용이 막대한 공정은?", options: ["Job Shop", "Batch", "Continuous", "Project"], answer: 2, explanation: "정유, 제철 등 연속 공정의 특징입니다." },
+            { id: 8, question: "EOQ 모델에서 최적 주문량은 어디서 결정되는가?", options: ["주문비용=0", "유지비용=0", "주문비용=유지비용", "재고=0"], answer: 2, explanation: "연간 주문비용과 유지비용이 같아지는 지점입니다." },
+            { id: 9, question: "ABC 분석은 어떤 원칙에 기반하는가?", options: ["파레토 원칙 (80/20)", "리틀의 법칙", "수요의 법칙", "한계효용 체감"], answer: 0, explanation: "소수의 중요 품목이 가치의 대부분을 차지한다는 원칙입니다." },
+            { id: 10, question: "P-시스템이 Q-시스템보다 더 필요한 것은?", options: ["잦은 주문", "적은 공간", "더 많은 안전 재고", "정교한 기록"], answer: 2, explanation: "주문 주기 동안의 불확실성을 커버해야 하므로 안전재고가 더 필요합니다." },
+            { id: 11, question: "독립 수요에 해당하는 것은?", options: ["자동차 바퀴", "완제품 자동차", "엔진", "나사"], answer: 1, explanation: "완제품은 시장 수요에 따르는 독립 수요입니다." },
+            { id: 12, question: "채찍 효과가 증폭되는 방향은?", options: ["소비자 쪽", "공급업체(상류) 쪽", "물류센터", "변동 없음"], answer: 1, explanation: "상류로 갈수록 수요 정보가 왜곡되어 변동이 커집니다." },
+            { id: 13, question: "공급자가 구매자의 재고를 직접 관리하는 방식은?", options: ["JIT", "VMI", "EOQ", "3PL"], answer: 1, explanation: "Vendor Managed Inventory (VMI) 입니다." }
+        ];
+
+        const MATCHING_DATA = [
+            { id: 'm1', concept: 'Job Shop (예시)', target: '대표적인 예시는?', correct: '응급실 / 맞춤가구', options: ['정유 공장', '자동차 조립', '응급실 / 맞춤가구', '베이커리'] },
+            { id: 'm2', concept: 'Batch Process (예시)', target: '대표적인 예시는?', correct: '영화관 / 베이커리', options: ['제철소', '자동차 공장', '수술실', '영화관 / 베이커리'] },
+            { id: 'm3', concept: 'Assembly Line (예시)', target: '대표적인 예시는?', correct: '자동차 조립', options: ['맞춤 양복', '자동차 조립', '설탕 공장', '항공기'] },
+            { id: 'm4', concept: 'Continuous (예시)', target: '대표적인 예시는?', correct: '정유 / 제철', options: ['가구 공방', '식당', '정유 / 제철', '스마트폰'] },
+            { id: 'm5', concept: '독립 수요', target: '성격이 다른 것은?', correct: '완제품 (시장수요)', options: ['완제품 (시장수요)', '부품', '원자재', '반제품'] },
+            { id: 'm6', concept: 'EOQ 성립 조건', target: '어느 지점인가?', correct: '주문비 = 유지비', options: ['주문비 > 유지비', '주문비 < 유지비', '주문비 = 유지비', '총비용 = 0'] },
+            { id: 'm7', concept: '채찍 효과', target: '증폭되는 방향?', correct: '상류 (공급업체)', options: ['하류 (소비자)', '상류 (공급업체)', '중간 물류', '없음'] },
+            { id: 'm8', concept: '지연 차별화', target: '핵심 전략?', correct: '최종 단계 연기', options: ['최종 단계 연기', '처음부터 맞춤', '재고 최소화', '공급다변화'] }
+        ];
+
+        const SUMMARY_DATA = [
+            { title: "5장: 제품 및 서비스 설계", content: [
+                { subtitle: "설계 전략", text: "표준화, 대량 맞춤(지연 차별화), 모듈러 설계, 동시 공학." },
+                { subtitle: "고객 중심 도구", text: "QFD(품질의 집), 카노 모델(필수/성과/매력), 서비스 청사진." },
+                { subtitle: "지속가능성 (3R)", text: "Reduce, Reuse, Recycle." }
+            ]},
+            { title: "6장: 프로세스 선택", content: [
+                { subtitle: "4가지 유형", text: "Job Shop(다품종 소량), Batch(중간), Assembly(소품종 대량), Continuous(연속)." },
+                { subtitle: "라인 밸런싱 7단계", text: "1.선행관계도 2.주기시간 3.최소작업장수 4.할당규칙 5.할당 6.효율성 7.재조정" },
+                { subtitle: "리틀의 법칙", text: "I = R × T (재고 = 산출률 × 흐름시간)" }
+            ]},
+            { title: "7장: 재고 관리", content: [
+                { subtitle: "비용 상충", text: "유지비용 vs 주문비용. 균형점 = EOQ." },
+                { subtitle: "시스템 비교", text: "Q-시스템(재주문점, 계속 검토), P-시스템(정기 주문, 많은 안전재고)." },
+                { subtitle: "ABC 분석", text: "A급(집중 관리), C급(단순 관리)." }
+            ]},
+            { title: "8장: SCM", content: [
+                { subtitle: "채찍 효과", text: "상류로 갈수록 변동 증폭. 해결: 정보공유, 리드타임 단축." },
+                { subtitle: "전략", text: "크로스 도킹(무재고), VMI(공급자 관리), 3PL(아웃소싱)." }
+            ]}
+        ];
+
+        // ----------------------------------------------------------------------
+        // STATE MANAGEMENT
+        // ----------------------------------------------------------------------
+        let currentMode = 'home';
+        
+        // Flashcard State
+        let flashcardIndex = 0;
+        let memorizedIds = [];
+        let isCardFlipped = false;
+
+        // Quiz State
+        let quizIndex = 0;
+        let quizScore = 0;
+        let quizSelectedOption = null;
+        let quizIsCorrect = null;
+
+        // Matching State
+        let matchIndex = 0;
+        let matchScore = 0;
+        let matchFeedback = null;
+        let matchItems = [];
+
+        // Summary State
+        let summaryOpenIndex = null;
+
+        // ----------------------------------------------------------------------
+        // INITIALIZATION
+        // ----------------------------------------------------------------------
+        window.onload = function() {
+            lucide.createIcons();
+            navigate('home');
+        };
+
+        // ----------------------------------------------------------------------
+        // NAVIGATION LOGIC
+        // ----------------------------------------------------------------------
+        function navigate(mode) {
+            currentMode = mode;
+            
+            // Header UI Update
+            const backBtn = document.getElementById('back-btn');
+            const homeIcon = document.getElementById('home-icon');
+            const pageTitle = document.getElementById('page-title');
+
+            if (mode === 'home') {
+                backBtn.classList.add('hidden');
+                homeIcon.classList.remove('hidden');
+                pageTitle.innerText = "MGT3003 마스터";
+            } else {
+                backBtn.classList.remove('hidden');
+                homeIcon.classList.add('hidden');
+                const titles = { flashcard: '암기 카드', quiz: '실전 퀴즈', matching: '개념 연결', summary: '요약 노트' };
+                pageTitle.innerText = titles[mode];
+            }
+
+            // Bottom Nav UI Update
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                const icon = btn.querySelector('i');
+                const text = btn.querySelector('span');
+                
+                if (btn.id === `nav-${mode}`) {
+                    btn.classList.add('text-blue-600', 'bg-blue-50', 'scale-105');
+                    btn.classList.remove('text-slate-400', 'hover:text-slate-600');
+                } else {
+                    btn.classList.remove('text-blue-600', 'bg-blue-50', 'scale-105');
+                    btn.classList.add('text-slate-400', 'hover:text-slate-600');
+                }
+            });
+
+            // Init Logic for modes
+            if (mode === 'matching') {
+                restartMatching();
+            } else if (mode === 'flashcard') {
+                isCardFlipped = false; // Reset flip
+            }
+
+            renderContent();
+            lucide.createIcons();
+        }
+
+        function renderContent() {
+            const container = document.getElementById('app-content');
+            container.innerHTML = ''; // Clear content
+
+            switch (currentMode) {
+                case 'home': renderHome(container); break;
+                case 'flashcard': renderFlashcard(container); break;
+                case 'quiz': renderQuiz(container); break;
+                case 'matching': renderMatching(container); break;
+                case 'summary': renderSummary(container); break;
+            }
+            lucide.createIcons();
+        }
+
+        // ----------------------------------------------------------------------
+        // RENDER FUNCTIONS
+        // ----------------------------------------------------------------------
+        
+        // 1. HOME
+        function renderHome(container) {
+            container.innerHTML = `
+                <div class="h-full flex flex-col items-center justify-center space-y-6 animate-fade-in">
+                    <div class="text-center mb-4">
+                        <div class="bg-white p-5 rounded-3xl shadow-lg inline-block mb-5">
+                            <i data-lucide="book-open" class="w-16 h-16 text-blue-600"></i>
+                        </div>
+                        <h1 class="text-3xl font-extrabold text-slate-800 mb-2 tracking-tight">MGT3003 마스터</h1>
+                        <p class="text-slate-500 font-medium text-lg">운영관리 핵심 개념 정복하기</p>
+                    </div>
+
+                    <div class="w-full grid grid-cols-2 gap-4">
+                        <button onclick="navigate('flashcard')" class="bg-white p-6 rounded-3xl shadow-md border border-slate-100 flex flex-col items-center gap-3 hover:border-blue-400 hover:shadow-xl active:scale-95 transition-all duration-300">
+                            <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center">
+                                <i data-lucide="brain" class="w-8 h-8 text-blue-600"></i>
+                            </div>
+                            <span class="font-bold text-slate-700 text-lg">암기카드</span>
+                        </button>
+                        <button onclick="navigate('quiz')" class="bg-white p-6 rounded-3xl shadow-md border border-slate-100 flex flex-col items-center gap-3 hover:border-green-400 hover:shadow-xl active:scale-95 transition-all duration-300">
+                            <div class="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center">
+                                <i data-lucide="check-circle" class="w-8 h-8 text-green-600"></i>
+                            </div>
+                            <span class="font-bold text-slate-700 text-lg">실전퀴즈</span>
+                        </button>
+                        <button onclick="navigate('matching')" class="bg-white p-6 rounded-3xl shadow-md border border-slate-100 flex flex-col items-center gap-3 hover:border-purple-400 hover:shadow-xl active:scale-95 transition-all duration-300">
+                            <div class="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center">
+                                <i data-lucide="link" class="w-8 h-8 text-purple-600"></i>
+                            </div>
+                            <span class="font-bold text-slate-700 text-lg">개념연결</span>
+                        </button>
+                        <button onclick="navigate('summary')" class="bg-white p-6 rounded-3xl shadow-md border border-slate-100 flex flex-col items-center gap-3 hover:border-orange-400 hover:shadow-xl active:scale-95 transition-all duration-300">
+                            <div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center">
+                                <i data-lucide="list" class="w-8 h-8 text-orange-600"></i>
+                            </div>
+                            <span class="font-bold text-slate-700 text-lg">요약노트</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 2. FLASHCARD
+        function renderFlashcard(container) {
+            const activeCards = FLASHCARD_DATA.filter(card => !memorizedIds.includes(card.id));
+            
+            // 인덱스 조정
+            if (flashcardIndex >= activeCards.length) flashcardIndex = 0;
+            const card = activeCards[flashcardIndex];
+
+            // 완료 화면
+            if (!card) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-center animate-fade-in">
+                        <i data-lucide="trophy" class="w-28 h-28 text-yellow-400 mb-8 drop-shadow-xl"></i>
+                        <h2 class="text-3xl font-bold text-slate-800 mb-3">완벽합니다!</h2>
+                        <p class="text-slate-600 mb-10 text-lg">모든 핵심 용어를 마스터했습니다.</p>
+                        <button onclick="resetFlashcards()" class="bg-blue-600 text-white px-8 py-5 rounded-2xl font-bold shadow-lg hover:bg-blue-700 active:scale-95 flex items-center gap-3 text-lg w-full max-w-xs justify-center">
+                            <i data-lucide="rotate-ccw" class="w-6 h-6"></i> 다시 공부하기
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="flex flex-col h-full relative">
+                    <div class="px-2 py-2 flex justify-between text-sm font-bold text-slate-400">
+                        <span>남은 카드: ${activeCards.length}</span>
+                        <span>진도율: ${Math.round((memorizedIds.length / FLASHCARD_DATA.length) * 100)}%</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-2.5 mb-6 mx-auto rounded-full overflow-hidden">
+                        <div class="bg-blue-500 h-full transition-all duration-500 rounded-full" style="width: ${(memorizedIds.length / FLASHCARD_DATA.length) * 100}%"></div>
+                    </div>
+
+                    <div class="flex-1 flex flex-col justify-center perspective-1000 mb-6">
+                        <div class="relative w-full aspect-[3/4] max-h-[520px] cursor-pointer group mx-auto" onclick="toggleFlip()">
+                            <div class="w-full h-full relative transition-all duration-500 transform-style-3d ${isCardFlipped ? 'rotate-y-180' : ''}">
+                                <!-- 앞면 -->
+                                <div class="absolute w-full h-full backface-hidden bg-white rounded-[2rem] shadow-xl border border-slate-100 flex flex-col items-center justify-center p-8 text-center">
+                                    <span class="absolute top-8 left-8 text-xs font-bold text-blue-600 bg-blue-100 px-4 py-2 rounded-full tracking-wider">TERM</span>
+                                    <span class="absolute top-8 right-8 text-xs text-slate-400 font-bold">${card.category}</span>
+                                    <h2 class="text-3xl font-bold text-slate-800 leading-tight break-keep">${card.term}</h2>
+                                    <div class="absolute bottom-10 flex flex-col items-center gap-2 text-slate-400 animate-bounce-slight">
+                                        <i data-lucide="mouse-pointer-2" class="w-6 h-6"></i>
+                                        <span class="text-sm font-medium">터치해서 뒤집기</span>
+                                    </div>
+                                </div>
+                                <!-- 뒷면 -->
+                                <div class="absolute w-full h-full backface-hidden bg-slate-800 rounded-[2rem] shadow-xl border border-slate-700 flex flex-col items-center justify-center p-8 text-center text-white rotate-y-180">
+                                    <span class="absolute top-8 left-8 text-xs font-bold text-yellow-400 bg-yellow-400/20 px-4 py-2 rounded-full tracking-wider">DEFINITION</span>
+                                    <p class="text-xl font-medium leading-relaxed break-keep text-slate-100">${card.definition}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-4 justify-center w-full mt-auto pb-4">
+                        <button onclick="nextFlashcard()" class="flex-1 py-5 rounded-3xl bg-red-50 text-red-600 font-bold active:scale-95 transition-all shadow-sm border border-red-100 flex flex-col items-center gap-1.5">
+                            <i data-lucide="x" class="w-7 h-7"></i> <span class="text-sm">아직 몰라요</span>
+                        </button>
+                        <button onclick="memorizeFlashcard(${card.id})" class="flex-1 py-5 rounded-3xl bg-green-50 text-green-600 font-bold active:scale-95 transition-all shadow-sm border border-green-100 flex flex-col items-center gap-1.5">
+                            <i data-lucide="check" class="w-7 h-7"></i> <span class="text-sm">암기했어요</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleFlip() {
+            isCardFlipped = !isCardFlipped;
+            renderContent();
+        }
+        function nextFlashcard() {
+            isCardFlipped = false;
+            // 애니메이션을 위해 약간의 지연 후 렌더링 할 수도 있지만, HTML 버전에선 즉시 렌더링
+            const activeCards = FLASHCARD_DATA.filter(c => !memorizedIds.includes(c.id));
+            flashcardIndex = (flashcardIndex + 1) % activeCards.length;
+            renderContent();
+        }
+        function memorizeFlashcard(id) {
+            memorizedIds.push(id);
+            isCardFlipped = false;
+            renderContent();
+        }
+        function resetFlashcards() {
+            memorizedIds = [];
+            flashcardIndex = 0;
+            isCardFlipped = false;
+            renderContent();
+        }
+
+        // 3. QUIZ
+        function renderQuiz(container) {
+            if (quizIndex >= QUIZ_DATA.length) {
+                // 결과 화면
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-center animate-fade-in">
+                        <div class="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center mb-8 shadow-inner">
+                            <span class="text-5xl font-extrabold text-blue-600">${quizScore} <span class="text-xl text-blue-400 font-medium">/ ${QUIZ_DATA.length}</span></span>
+                        </div>
+                        <h2 class="text-3xl font-bold text-slate-800 mb-3">퀴즈 종료!</h2>
+                        <p class="text-slate-600 mb-10 font-medium text-lg">
+                            ${quizScore >= 10 ? "훌륭합니다! 개념이 잘 잡혀있네요." : "오답 노트를 확인하고 다시 도전해보세요."}
+                        </p>
+                        <button onclick="resetQuiz()" class="bg-blue-600 text-white px-8 py-5 rounded-2xl font-bold shadow-lg w-full max-w-xs active:scale-95 text-lg">다시 풀기</button>
+                    </div>
+                `;
+                return;
+            }
+
+            const q = QUIZ_DATA[quizIndex];
+            
+            // 옵션 HTML 생성
+            let optionsHtml = '';
+            q.options.forEach((opt, idx) => {
+                let btnClass = "bg-white border-slate-100 hover:border-blue-200 text-slate-700 shadow-sm";
+                let iconHtml = "";
+
+                if (quizSelectedOption !== null) {
+                    if (idx === q.answer) {
+                        btnClass = "bg-green-50 border-green-400 text-green-800 shadow-md";
+                        iconHtml = '<i data-lucide="check-circle" class="w-6 h-6 text-green-500 absolute right-4"></i>';
+                    } else if (idx === quizSelectedOption) {
+                        btnClass = "bg-red-50 border-red-400 text-red-800 shadow-md";
+                        iconHtml = '<i data-lucide="x" class="w-6 h-6 text-red-500 absolute right-4"></i>';
+                    } else {
+                        btnClass = "bg-slate-50 border-slate-100 text-slate-400 opacity-60";
+                    }
+                }
+
+                optionsHtml += `
+                    <button onclick="handleQuizOption(${idx})" ${quizSelectedOption !== null ? 'disabled' : ''} 
+                        class="p-5 rounded-2xl text-left font-medium transition-all duration-200 border-2 relative w-full mb-3 flex items-center text-lg ${btnClass}">
+                        <span class="pr-8">${opt}</span>
+                        ${iconHtml}
+                    </button>
+                `;
+            });
+
+            // 해설 HTML
+            let explanationHtml = '';
+            let nextBtnHtml = '';
+            if (quizSelectedOption !== null) {
+                explanationHtml = `
+                    <div class="animate-fade-in bg-white p-6 rounded-3xl mb-6 border border-blue-100 shadow-sm mt-4">
+                        <div class="flex items-start gap-4">
+                            <div class="bg-blue-100 p-2 rounded-full shrink-0">
+                                <i data-lucide="help-circle" class="w-6 h-6 text-blue-600"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-blue-800 text-base mb-1">해설</p>
+                                <p class="text-base text-slate-600 leading-relaxed break-keep">${q.explanation}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                nextBtnHtml = `
+                    <button onclick="nextQuizQuestion()" class="bg-blue-600 text-white w-full py-5 rounded-2xl font-bold shadow-xl mt-auto sticky bottom-0 active:scale-95 text-lg">
+                        ${quizIndex < QUIZ_DATA.length - 1 ? "다음 문제" : "결과 보기"}
+                    </button>
+                `;
+            }
+
+            container.innerHTML = `
+                <div class="flex flex-col h-full relative">
+                    <div class="flex justify-between items-center mb-6">
+                        <span class="text-sm font-bold text-slate-400 bg-slate-100 px-4 py-1.5 rounded-full">Q.${quizIndex + 1}</span>
+                        <span class="text-sm font-bold text-blue-600 bg-blue-50 px-4 py-1.5 rounded-full">Score: ${quizScore}</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <h3 class="text-2xl font-bold text-slate-800 leading-snug mb-8 break-keep">${q.question}</h3>
+                        <div class="flex flex-col">
+                            ${optionsHtml}
+                        </div>
+                        ${explanationHtml}
+                    </div>
+                    ${nextBtnHtml}
+                </div>
+            `;
+        }
+
+        function handleQuizOption(idx) {
+            if (quizSelectedOption !== null) return;
+            quizSelectedOption = idx;
+            const correct = (idx === QUIZ_DATA[quizIndex].answer);
+            if (correct) quizScore++;
+            renderContent();
+        }
+        function nextQuizQuestion() {
+            quizIndex++;
+            quizSelectedOption = null;
+            renderContent();
+        }
+        function resetQuiz() {
+            quizIndex = 0;
+            quizScore = 0;
+            quizSelectedOption = null;
+            renderContent();
+        }
+
+        // 4. MATCHING
+        function renderMatching(container) {
+            const item = matchItems[matchIndex];
+
+            if (!item) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-center animate-fade-in">
+                        <i data-lucide="trophy" class="w-28 h-28 text-purple-400 mb-8 drop-shadow-xl"></i>
+                        <h2 class="text-3xl font-bold text-slate-800 mb-3">연결 완료!</h2>
+                        <p class="text-slate-600 mb-10 text-lg">모든 개념을 올바르게 연결하셨습니다.</p>
+                        <p class="text-2xl font-bold text-blue-600 mb-10 bg-blue-50 px-8 py-3 rounded-full">최종 점수: ${matchScore} / ${MATCHING_DATA.length}</p>
+                        <button onclick="restartMatching()" class="bg-blue-600 text-white px-8 py-5 rounded-2xl font-bold shadow-lg w-full max-w-xs active:scale-95 text-lg">다시 하기</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let optionsHtml = '';
+            item.options.forEach((opt, idx) => {
+                let btnClass = "bg-white text-slate-700 border-slate-100 hover:border-purple-300 hover:bg-purple-50 shadow-sm";
+                let animClass = "";
+                
+                if (matchFeedback === 'correct' && opt === item.correct) {
+                    btnClass = "bg-green-500 text-white border-green-500 scale-105 shadow-md";
+                } else if (matchFeedback === 'wrong' && opt !== item.correct) {
+                     // 선택한 오답 시각효과가 필요하다면 여기에 추가 로직 필요하지만, 
+                     // 현재 구조상 클릭된 버튼을 특정하기 어려우므로 전체 오답 처리
+                     btnClass = "bg-slate-100 text-slate-400 border-slate-200";
+                     animClass = "shake"; 
+                }
+
+                optionsHtml += `
+                    <button onclick="handleMatchingOption('${opt.replace(/'/g, "\\'")}')" 
+                        class="h-28 rounded-3xl border-2 flex flex-col items-center justify-center p-3 text-center transition-all active:scale-95 text-base font-medium leading-snug w-full ${btnClass} ${animClass}" ${matchFeedback === 'correct' ? 'disabled' : ''}>
+                        ${opt}
+                    </button>
+                `;
+            });
+
+            container.innerHTML = `
+                <div class="flex flex-col h-full relative">
+                    <div class="flex justify-between items-center mb-6">
+                        <span class="text-sm font-bold text-slate-400 bg-slate-100 px-4 py-1.5 rounded-full">남은 문제: ${matchItems.length - matchIndex}</span>
+                        <span class="text-sm font-bold text-purple-600 bg-purple-50 px-4 py-1.5 rounded-full">Score: ${matchScore}</span>
+                    </div>
+
+                    <div class="flex-1 flex flex-col items-center justify-center mb-8 relative">
+                        <div class="w-full bg-white rounded-[2rem] shadow-lg border border-purple-100 flex flex-col items-center justify-center p-8 text-center z-10 min-h-[240px]">
+                            <span class="text-xs font-bold text-purple-500 bg-purple-50 px-4 py-2 rounded-full mb-5 tracking-wide">CONCEPT</span>
+                            <h2 class="text-3xl font-bold text-slate-800 break-keep mb-8">${item.concept}</h2>
+                            <div class="w-full bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl p-5 flex items-center justify-center min-h-[80px]">
+                                ${matchFeedback === 'correct' 
+                                    ? `<span class="text-green-600 font-bold animate-fade-in flex items-center gap-3 text-xl"><i data-lucide="check-circle" class="w-7 h-7"></i> ${item.correct}</span>`
+                                    : `<span class="text-slate-400 font-medium text-lg">${item.target}</span>`
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-center text-sm text-slate-400 mb-6 animate-bounce-slight font-medium">알맞은 블록을 터치하여 연결하세요</p>
+
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function handleMatchingOption(opt) {
+            if (matchFeedback) return;
+            const currentItem = matchItems[matchIndex];
+
+            if (opt === currentItem.correct) {
+                matchFeedback = 'correct';
+                matchScore++;
+                renderContent();
+                setTimeout(() => {
+                    matchFeedback = null;
+                    matchIndex++;
+                    renderContent();
+                }, 800);
+            } else {
+                matchFeedback = 'wrong';
+                renderContent();
+                setTimeout(() => {
+                    matchFeedback = null;
+                    renderContent();
+                }, 600);
+            }
+        }
+
+        function restartMatching() {
+            // Shuffle
+            matchItems = [...MATCHING_DATA].sort(() => Math.random() - 0.5);
+            matchIndex = 0;
+            matchScore = 0;
+            matchFeedback = null;
+            renderContent();
+        }
+
+        // 5. SUMMARY
+        function renderSummary(container) {
+            let html = `
+                <div class="pb-6">
+                    <h2 class="text-2xl font-extrabold text-slate-800 mb-8 px-2 flex items-center gap-3">
+                        <i data-lucide="list" class="w-7 h-7 text-orange-500"></i> 핵심 요약 노트
+                    </h2>
+                    <div class="space-y-5">
+            `;
+
+            SUMMARY_DATA.forEach((chapter, index) => {
+                const isOpen = (summaryOpenIndex === index);
+                html += `
+                    <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden transition-all duration-300">
+                        <button onclick="toggleSummary(${index})" class="w-full flex items-center justify-between p-6 bg-white hover:bg-slate-50 transition-colors">
+                            <span class="font-bold text-lg text-slate-700">${chapter.title}</span>
+                            <div class="bg-slate-100 p-1.5 rounded-full transition-transform duration-300 ${isOpen ? 'rotate-180 bg-orange-100' : ''}">
+                                <i data-lucide="chevron-down" class="w-6 h-6 ${isOpen ? 'text-orange-500' : 'text-slate-400'}"></i>
+                            </div>
+                        </button>
+                        ${isOpen ? `
+                            <div class="p-6 bg-slate-50/50 border-t border-slate-100 text-base text-slate-600 space-y-5 animate-fade-in">
+                                ${chapter.content.map(item => `
+                                    <div class="relative pl-5">
+                                        <div class="absolute left-0 top-2 w-1.5 h-1.5 bg-orange-300 rounded-full"></div>
+                                        <p class="font-bold text-slate-800 mb-1.5 text-lg">${item.subtitle}</p>
+                                        <p class="leading-relaxed whitespace-pre-line text-slate-600">${item.text || item.definition || ''}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            container.innerHTML = html;
+        }
+
+        function toggleSummary(index) {
+            summaryOpenIndex = (summaryOpenIndex === index) ? null : index;
+            renderContent();
+        }
+
+    </script>
+</body>
+</html>
